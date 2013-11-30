@@ -1,3 +1,5 @@
-The OpenShift `jbossews` cartridge documentation can be found at:
+mongodb-librarian
+=================
 
-https://github.com/openshift/origin-server/tree/master/cartridges/openshift-origin-cartridge-jbossews/README.md
+[![Build Status](https://travis-ci.org/danielmroczka/mongodb-librarian.png?branch=master)](https://travis-ci.org/danielmroczka/mongodb-librarian)
+[![Coverage Status](https://coveralls.io/repos/danielmroczka/mongodb-librarian/badge.png?branch=master)](https://coveralls.io/r/danielmroczka/mongodb-librarian?branch=master)
