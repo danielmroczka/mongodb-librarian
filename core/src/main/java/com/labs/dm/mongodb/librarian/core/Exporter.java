@@ -1,7 +1,7 @@
 /*
  * Copyright daniel.mroczka@gmail.com. All rights reserved. 
  */
-package com.labs.dm.mongodb.librarian.exporter;
+package com.labs.dm.mongodb.librarian.core;
 
 import com.itextpdf.text.pdf.PdfReader;
 import com.mongodb.BasicDBObject;
