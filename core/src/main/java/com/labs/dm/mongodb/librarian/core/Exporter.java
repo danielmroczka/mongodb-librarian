@@ -54,7 +54,7 @@ public class Exporter {
     }
 
     public static void main(String[] args) throws IOException {
-        Exporter exporter = new Exporter("mongodb://wmb:wmb123@paulo.mongohq.com:10027/books", "D:\\dummy");
+        Exporter exporter = new Exporter("mongodb://wmb:wmb123@paulo.mongohq.com:10027/books", "D:\\pdf");
         exporter.execute();
     }
 
