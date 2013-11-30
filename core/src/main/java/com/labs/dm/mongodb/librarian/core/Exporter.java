@@ -73,7 +73,7 @@ public class Exporter {
 
     private void updateObject(DBObject item, PdfReader reader) {
         item.put("pages", reader.getNumberOfPages());
-        Map<String, String> map = new ConcurrentHashMap<>();
+        Map<String, String> map = new ConcurrentHashMap<String, String>();
         map.putAll(reader.getInfo());
 
         Iterator<Map.Entry<String, String>> iter = map.entrySet().iterator();
@@ -118,7 +118,7 @@ public class Exporter {
         if (mode == Mode.DELETE_ADD) {
             collection.remove(new BasicDBObject());
         }
-        Set<String> set = new HashSet<>();
+        Set<String> set = new HashSet<String>();
         for (File file : list) {
             counter++;
             DBObject item = new BasicDBObject();
@@ -167,7 +167,7 @@ public class Exporter {
     private static int removeOrphans(Set<String> set, DBCollection collection) {
         int res = 0;
         DBCursor c = collection.find();
-        Set<String> all = new HashSet<>();
+        Set<String> all = new HashSet<String>();
         while (c.hasNext()) {
             DBObject ob = c.next();
             all.add(ob.get("_id").toString());
