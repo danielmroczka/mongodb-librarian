@@ -12,10 +12,14 @@
     <modules>
         <module>web</module>
         <module>core</module>
-    </modules>
+    <module>mongo</module>
+  </modules>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <spring.version>3.2.5.RELEASE</spring.version>
+        <spring.data.mongo.version>1.3.2.RELEASE</spring.data.mongo.version>
+        <slf4j.version>1.7.2</slf4j.version>
     </properties>
 
     <dependencies>
