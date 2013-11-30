@@ -1,0 +1,12 @@
+#box {
+    width: 100px;
+    height: 100px;
+    text-align: center;
+    background: #9999ff;
+    font-size: 14px;
+}
+
+
+input[type="submit"] {
+    color: red;
+}
