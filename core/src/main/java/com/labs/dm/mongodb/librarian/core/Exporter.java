@@ -31,51 +31,58 @@ import org.apache.commons.io.FilenameUtils;
  * @author daniel
  */
 public class Exporter {
-
+    
     private static final Logger logger = Logger.getLogger("Exporter");
     private final String dir;
     private static final String mongoDB = "books";
+    private static final String mongoCollection = "ebook";
     private final DB db;
-
+    
     enum Mode {
 
-        //Removes all documents and inserts 
+        /**
+         * Removes all documents and inserts
+         */
         DELETE_ADD,
-        //Adds only new documents
+        /**
+         * Adds only new documents
+         */
         ADD,
-        //Adds new documents, remove unexistsing
+        /**
+         * Adds new documents, remove unexisting
+         */
         ADD_REMOVE_ORPHANS
     };
-
+    
     public Exporter(String mongoUri, String dir) throws UnknownHostException {
         MongoClient client = new MongoClient(new MongoClientURI(mongoUri));
         this.dir = dir;
         db = client.getDB(mongoDB);
     }
-
+    
     public static void main(String[] args) throws IOException {
         Exporter exporter = new Exporter("mongodb://wmb:wmb123@paulo.mongohq.com:10027/books", "D:\\pdf");
         exporter.execute();
     }
-
+    
     private void execute() throws IOException {
         Collection<File> ebookList = FileUtils.listFiles(new File(dir), new String[]{"pdf", "epub", "mobi"}, true);
-        export(ebookList, db.getCollection("ebook"), Mode.ADD_REMOVE_ORPHANS);
+        export(ebookList, db.getCollection(mongoCollection), Mode.DELETE_ADD);
     }
-
+    
     private void updateObject(DBObject item, File file) {
         item.put("name", FilenameUtils.removeExtension(file.getName()));
         item.put("ext", FilenameUtils.getExtension(file.getName()));
         item.put("path", file.getPath());
         item.put("size", file.length());
-
+        
     }
-
+    
     private void updateObject(DBObject item, PdfReader reader) {
         item.put("pages", reader.getNumberOfPages());
         Map<String, String> map = new ConcurrentHashMap<String, String>();
         map.putAll(reader.getInfo());
-
+        
         Iterator<Map.Entry<String, String>> iter = map.entrySet().iterator();
         while (iter.hasNext()) {
             Map.Entry<String, String> entry = iter.next();
@@ -85,7 +92,7 @@ public class Exporter {
                 map.remove(entry.getKey());
             }
         }
-
+        
         if (map.containsKey("Title")) {
             item.put("title", map.get("Title"));
             map.remove("Title");
@@ -98,9 +105,9 @@ public class Exporter {
             item.put("author", map.get("Author"));
             map.remove("Author");
         }
-
+        
         item.put("info", map);
-
+        
     }
 
     /**
@@ -111,59 +118,66 @@ public class Exporter {
      * @param mode
      */
     private void export(Collection<File> list, DBCollection collection, Mode mode) throws FileNotFoundException, IOException {
-        int deleted = 0;
-        int inserted = 0;
-        int updated = 0;
-        int counter = 0;
+        int deleted = 0, inserted = 0, updated = 0, failed = 0, counter = 0;
         if (mode == Mode.DELETE_ADD) {
             collection.remove(new BasicDBObject());
         }
-        Set<String> set = new HashSet<String>();
+        Set<String> set = new HashSet<>();
         for (File file : list) {
             counter++;
             DBObject item = new BasicDBObject();
-            PdfReader reader = null;
             String md5 = DigestUtils.md5Hex(new FileInputStream(file));
             item.put("_id", md5);
             set.add(md5);
             updateObject(item, file);
-            try {
-                reader = new PdfReader(file.getPath());
-                updateObject(item, reader);
-                logger.info(counter + "/" + list.size() + " " + reader.getInfo());
-            } catch (IOException e) {
-                logger.severe(e.getMessage());
-            } finally {
-                if (reader != null) {
-                    reader.close();
+            if ("pdf".equalsIgnoreCase(FilenameUtils.getExtension(file.getName()))) {
+                PdfReader reader = null;
+                try {
+                    reader = new PdfReader(file.getPath());
+                    updateObject(item, reader);
+                    
+                } catch (IOException e) {
+                    logger.severe(e.getMessage());
+                } finally {
+                    if (reader != null) {
+                        reader.close();
+                    }
+                    
                 }
-
             }
-            logger.info(file.getPath());
+            logger.info(counter + "/" + list.size() + " " + file.getName());
             BasicDBObject query = new BasicDBObject("_id", item.get("_id"));
-            if (mode == Mode.DELETE_ADD || collection.find(query).size() == 0) {
-                collection.insert(item);
-                inserted++;
-                logger.fine("insert");
-            } else {
-                collection.update(query, item);
-                updated++;
-                logger.fine("update");
+            try {
+                if (mode == Mode.DELETE_ADD || collection.find(query).size() == 0) {
+                    collection.insert(item);
+                    inserted++;
+                    logger.fine("insert");
+                } else {
+                    collection.update(query, item);
+                    updated++;
+                    logger.fine("update");
+                }
+            } catch (Exception e) {
+                logger.severe(e.getMessage());
+                failed++;
             }
-
+            
         }
         if (mode == Mode.ADD_REMOVE_ORPHANS) {
             deleted = removeOrphans(set, collection);
         }
-
+        
         StringBuilder report = new StringBuilder();
         report.append("Summary report").append("\n");
         report.append("Inserted items: ").append(inserted).append("\n");
         report.append("Updated items: ").append(updated).append("\n");
         report.append("Removed items: ").append(deleted).append("\n");
+        report.append("Failed updates: ").append(failed).append("\n").append("------");
+        report.append("Summary files: ").append(inserted+updated+deleted+failed);
+        report.append("Summary files: ").append(counter);
         logger.info(report.toString());
     }
-
+    
     private static int removeOrphans(Set<String> set, DBCollection collection) {
         int res = 0;
         DBCursor c = collection.find();
