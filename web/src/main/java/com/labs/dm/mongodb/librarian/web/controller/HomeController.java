@@ -22,4 +22,9 @@ public class HomeController {
         
         return new ModelAndView("index");
     }
+    
+    @RequestMapping({"jquery.do"})
+    public ModelAndView jquery(Model model) {
+        return new ModelAndView("jquery");
+    }    
 }

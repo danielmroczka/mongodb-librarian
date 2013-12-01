@@ -21,11 +21,13 @@
             <groupId>com.itextpdf</groupId>
             <artifactId>itextpdf</artifactId>
             <version>5.4.4</version>
+            
         </dependency>
         <dependency>
             <groupId>org.bouncycastle</groupId>
             <artifactId>bcprov-jdk15on</artifactId>
             <version>1.49</version>
+           
         </dependency>
         <dependency>
             <groupId>commons-codec</groupId>

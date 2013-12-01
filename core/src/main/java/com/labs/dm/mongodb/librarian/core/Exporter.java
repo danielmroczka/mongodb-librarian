@@ -31,13 +31,13 @@ import org.apache.commons.io.FilenameUtils;
  * @author daniel
  */
 public class Exporter {
-    
+
     private static final Logger logger = Logger.getLogger("Exporter");
     private final String dir;
     private static final String mongoDB = "books";
     private static final String mongoCollection = "ebook";
     private final DB db;
-    
+
     enum Mode {
 
         /**
@@ -45,44 +45,48 @@ public class Exporter {
          */
         DELETE_ADD,
         /**
+         * Adds new elements and updates other.
+         */
+        ADD_UPDATE,
+        /**
          * Adds only new documents
          */
         ADD,
         /**
-         * Adds new documents, remove unexisting
+         * Adds new documents, remove nonexistent
          */
         ADD_REMOVE_ORPHANS
     };
-    
+
     public Exporter(String mongoUri, String dir) throws UnknownHostException {
         MongoClient client = new MongoClient(new MongoClientURI(mongoUri));
         this.dir = dir;
         db = client.getDB(mongoDB);
     }
-    
+
     public static void main(String[] args) throws IOException {
         Exporter exporter = new Exporter("mongodb://wmb:wmb123@paulo.mongohq.com:10027/books", "D:\\pdf");
         exporter.execute();
     }
-    
+
     private void execute() throws IOException {
         Collection<File> ebookList = FileUtils.listFiles(new File(dir), new String[]{"pdf", "epub", "mobi"}, true);
-        export(ebookList, db.getCollection(mongoCollection), Mode.DELETE_ADD);
+        export(ebookList, db.getCollection(mongoCollection), Mode.ADD_REMOVE_ORPHANS);
     }
-    
+
     private void updateObject(DBObject item, File file) {
         item.put("name", FilenameUtils.removeExtension(file.getName()));
         item.put("ext", FilenameUtils.getExtension(file.getName()));
         item.put("path", file.getPath());
         item.put("size", file.length());
-        
+
     }
-    
+
     private void updateObject(DBObject item, PdfReader reader) {
         item.put("pages", reader.getNumberOfPages());
         Map<String, String> map = new ConcurrentHashMap<String, String>();
         map.putAll(reader.getInfo());
-        
+
         Iterator<Map.Entry<String, String>> iter = map.entrySet().iterator();
         while (iter.hasNext()) {
             Map.Entry<String, String> entry = iter.next();
@@ -92,22 +96,22 @@ public class Exporter {
                 map.remove(entry.getKey());
             }
         }
-        
-        if (map.containsKey("Title")) {
-            item.put("title", map.get("Title"));
-            map.remove("Title");
-        }
-        if (map.containsKey("title")) {
-            item.put("title", map.get("title"));
-            map.remove("title");
-        }
-        if (map.containsKey("Author")) {
-            item.put("author", map.get("Author"));
-            map.remove("Author");
-        }
-        
+
+        insertNotEmpty(item, map, "Title");
+        insertNotEmpty(item, map, "Author");
+
         item.put("info", map);
-        
+
+    }
+
+    private void insertNotEmpty(DBObject item, Map<String, String> map, String key) {
+        if (map.containsKey(key) && !map.get(key).isEmpty()) {
+            item.put(key.toLowerCase(), map.get(key));
+            map.remove(key);
+        }
+        if (!key.equals(key.toLowerCase())) {
+            insertNotEmpty(item, map, key.toLowerCase());
+        }
     }
 
     /**
@@ -135,14 +139,13 @@ public class Exporter {
                 try {
                     reader = new PdfReader(file.getPath());
                     updateObject(item, reader);
-                    
+
                 } catch (IOException e) {
                     logger.severe(e.getMessage());
                 } finally {
                     if (reader != null) {
                         reader.close();
                     }
-                    
                 }
             }
             logger.info(counter + "/" + list.size() + " " + file.getName());
@@ -151,37 +154,34 @@ public class Exporter {
                 if (mode == Mode.DELETE_ADD || collection.find(query).size() == 0) {
                     collection.insert(item);
                     inserted++;
-                    logger.fine("insert");
                 } else {
                     collection.update(query, item);
                     updated++;
-                    logger.fine("update");
                 }
             } catch (Exception e) {
                 logger.severe(e.getMessage());
                 failed++;
             }
-            
+
         }
         if (mode == Mode.ADD_REMOVE_ORPHANS) {
             deleted = removeOrphans(set, collection);
         }
-        
+
         StringBuilder report = new StringBuilder();
         report.append("Summary report").append("\n");
         report.append("Inserted items: ").append(inserted).append("\n");
         report.append("Updated items: ").append(updated).append("\n");
         report.append("Removed items: ").append(deleted).append("\n");
-        report.append("Failed updates: ").append(failed).append("\n").append("------");
-        report.append("Summary files: ").append(inserted+updated+deleted+failed);
+        report.append("Failed updates: ").append(failed).append("\n");
         report.append("Summary files: ").append(counter);
         logger.info(report.toString());
     }
-    
+
     private static int removeOrphans(Set<String> set, DBCollection collection) {
         int res = 0;
         DBCursor c = collection.find();
-        Set<String> all = new HashSet<String>();
+        Set<String> all = new HashSet<>();
         while (c.hasNext()) {
             DBObject ob = c.next();
             all.add(ob.get("_id").toString());

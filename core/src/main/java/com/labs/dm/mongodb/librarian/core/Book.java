@@ -4,10 +4,12 @@
 
 package com.labs.dm.mongodb.librarian.core;
 
+import java.io.Serializable;
+
 /**
  * @author daniel
  */
-public class Book {
+public class Book implements Serializable {
 
     public Book(String title) {
         this.title = title;
