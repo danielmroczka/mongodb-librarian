@@ -10,9 +10,6 @@
     <groupId>com.labs.dm.mongodb.librarian</groupId>
     <artifactId>data</artifactId>
     <name>mongodb-librarian-data</name>
-    <properties>
-
-    </properties>
 
     <dependencies>
         <!-- Spring dependencies -->

@@ -14,8 +14,6 @@
 
     </head>
     <body>
-        <h1>Search Page</h1>
-
         <form action="search.do" method="POST">
             Title <input type="text" name="title"><br>
             <input type="submit" value="Submit">
