@@ -3,6 +3,7 @@
  */
 package com.labs.dm.mongodb.librarian.core;
 
+import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
 import com.mongodb.DBCollection;
@@ -30,14 +31,19 @@ public class SearchDAO {
     public List<Book> find(String title, String ext) {
         List<Book> list = new ArrayList<>();
         DBCollection col = db.getCollection("ebook");
-        DBObject query = new BasicDBObject();
-        query.put("name", Pattern.compile(title));
-        try (DBCursor res = col.find(query)) {
+
+        BasicDBList or = new BasicDBList();
+        or.add(new BasicDBObject("name", Pattern.compile(title, Pattern.CASE_INSENSITIVE)));
+        or.add(new BasicDBObject("title", Pattern.compile(title, Pattern.CASE_INSENSITIVE)));
+        DBObject query = new BasicDBObject("$or", or);
+
+        DBObject keys = new BasicDBObject("name", 1);
+        try (DBCursor res = col.find(query, keys)) {
             while (res.hasNext()) {
                 DBObject item = res.next();
                 list.add(new Book((String) item.get("name")));
                 System.out.println("Add" + item);
-                
+
             }
         }
         return list;
