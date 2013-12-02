@@ -12,6 +12,7 @@ import org.springframework.http.converter.json.MappingJacksonHttpMessageConverte
 import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.config.annotation.DefaultServletHandlerConfigurer;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 import org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter;
 import org.springframework.web.servlet.view.JstlView;
@@ -32,6 +33,12 @@ public class WebConfiguration extends WebMvcConfigurerAdapter {
      bean.setFavorPathExtension(false);
      return bean;
      }*/
+
+    @Override
+    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        registry.addResourceHandler("/resources/**").addResourceLocations("/public-resources/");
+    }
+
     @Bean
     public ViewResolver resolver() {
         UrlBasedViewResolver url = new UrlBasedViewResolver();
