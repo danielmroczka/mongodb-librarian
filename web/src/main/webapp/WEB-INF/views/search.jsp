@@ -5,7 +5,7 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>Search Page</title>
-	<link href="<c:url value="/resources/css/style.css" />" rel="stylesheet">
+        <link href="<c:url value="/resources/css/styles.css" />" rel="stylesheet">
         <script src="http://code.jquery.com/jquery-1.9.1.js"></script>
     </head>
     <body>
@@ -27,14 +27,13 @@
                     dataType: 'json',
                     success: function(responseData) {
                         if (responseData) {
-
                             for (var i in responseData) {
                                 $('#results').append((i) + '. ' + responseData[i].title + '<br/>');
                             }
                         }
                     },
                     error: function(request, status, error) {
-                        alert(request.responseText);
+                        //alert(request.responseText);
                     }
 
                 });
@@ -45,5 +44,7 @@
         <div id="results">
 
         </div>
+        
+        <div id="error"></div>
     </body>
 </html>

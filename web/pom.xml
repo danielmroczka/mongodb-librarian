@@ -91,6 +91,16 @@
             <groupId>com.labs.dm.mongodb.librarian</groupId>
             <artifactId>core</artifactId>
             <version>0.0.1-SNAPSHOT</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.itextpdf</groupId>
+                    <artifactId>itextpdf</artifactId>   
+                </exclusion>
+                <exclusion>
+                    <groupId>org.bouncycastle</groupId>
+                    <artifactId>bcprov-jdk15on</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         
         <dependency>

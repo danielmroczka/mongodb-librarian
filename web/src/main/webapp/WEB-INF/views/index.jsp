@@ -5,7 +5,7 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>Home Page</title>
-	<link href="<c:url value="/resources/css/style.css" />" rel="stylesheet">
+	<link href="<c:url value="/resources/css/styles.css" />" rel="stylesheet">
     </head>
     <body>
         <h3>MongoDB Librarian - Hello World!</h3>
