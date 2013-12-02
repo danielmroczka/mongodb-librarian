@@ -5,6 +5,8 @@ package com.labs.dm.mongodb.librarian.mongo.repository;
 
 import com.labs.dm.mongodb.librarian.mongo.ApplicationConfig;
 import com.labs.dm.mongodb.librarian.mongo.domain.Book;
+import java.util.Collection;
+import static junit.framework.Assert.assertTrue;
 import static org.junit.Assert.assertNotNull;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -33,4 +35,15 @@ public class BookRepositoryTest {
         //THEN
         assertNotNull(read);
     }
+    
+    //@Test
+    public void findByTitle() {
+        //GIVEN
+        //Book book = new Book("1984", new Author("George", "Orwell"));
+        //WHEN
+        //repository.save(book);
+        Collection<Book> read = repository.findByTitle("Java");
+        //THEN
+        assertTrue(read.size() > 0);
+    }    
 }

@@ -10,11 +10,9 @@
     </head>
     <body>
         <form>
-            Title:
-            <input type="text" name="title" id="title">
-            <input type="submit" value="Submit">
+            Book title or filename: <input type="text" name="title" id="title">
+            <input type="submit" value="Search" class="myButton">
         </form>
-        <span></span>
         <script>
             $("form").submit(function(event) {
                 $('#results').html('');
@@ -41,10 +39,10 @@
             });
         </script>
 
-        <div id="results">
+        <div id="results" >
 
         </div>
-        
+
         <div id="error"></div>
     </body>
 </html>
