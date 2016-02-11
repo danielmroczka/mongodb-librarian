@@ -11,3 +11,5 @@
 /core/target/
 /mongo/target/
 /data/target/
+*.iml
+.idea

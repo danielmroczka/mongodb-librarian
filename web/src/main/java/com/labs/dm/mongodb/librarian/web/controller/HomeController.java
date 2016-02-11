@@ -4,9 +4,11 @@
 
 package com.labs.dm.mongodb.librarian.web.controller;
 
+import org.springframework.mobile.device.Device;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 /**
@@ -17,14 +19,20 @@ public class HomeController {
     
     @RequestMapping({"home.do"})
     public ModelAndView homePage(Model model) {
-        //model.addAttribute("msg", "Hello!");
-        System.out.println(model.getClass());
-        
         return new ModelAndView("index");
     }
     
-    @RequestMapping({"jquery.do"})
-    public ModelAndView jquery(Model model) {
-        return new ModelAndView("jquery");
-    }    
+    @RequestMapping("/detect-device.do")
+    public @ResponseBody String detectDevice(Device device) {
+        String deviceType = "unknown";
+        if (device.isNormal()) {
+            deviceType = "normal";
+        } else if (device.isMobile()) {
+            deviceType = "mobile";
+        } else if (device.isTablet()) {
+            deviceType = "tablet";
+        }
+        return "Hello " + deviceType + " browser!";
+    }
+   
 }

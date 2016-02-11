@@ -29,8 +29,7 @@ public class ApplicationConfig extends AbstractMongoConfiguration {
     @Bean
     @Override
     public MongoTemplate mongoTemplate() throws Exception {
-        MongoTemplate mongoTemplate = new MongoTemplate(mongo(), getDatabaseName(), getUserCredentials());
-        return mongoTemplate;
+        return new MongoTemplate(mongo(), getDatabaseName(), getUserCredentials());
     }
 
     @Bean
@@ -63,7 +62,7 @@ public class ApplicationConfig extends AbstractMongoConfiguration {
 
     @Override
     public Mongo mongo() throws Exception {
-        MongoClient client = new MongoClient(new MongoClientURI("mongodb://wmb:wmb123@paulo.mongohq.com:10027/books"));
+        MongoClient client = new MongoClient(new MongoClientURI("mongodb://wmb:wmb123@ds062178.mongolab.com:62178/books"));
         client.setWriteConcern(WriteConcern.SAFE);
         return client;
     }

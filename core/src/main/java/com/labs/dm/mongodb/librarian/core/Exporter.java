@@ -4,28 +4,18 @@
 package com.labs.dm.mongodb.librarian.core;
 
 import com.itextpdf.text.pdf.PdfReader;
-import com.mongodb.BasicDBObject;
-import com.mongodb.DB;
-import com.mongodb.DBCollection;
-import com.mongodb.DBCursor;
-import com.mongodb.DBObject;
-import com.mongodb.MongoClient;
-import com.mongodb.MongoClientURI;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.net.UnknownHostException;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.logging.Logger;
+import com.mongodb.*;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.net.UnknownHostException;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Logger;
 
 /**
  * @author daniel
@@ -56,7 +46,7 @@ public class Exporter {
          * Adds new documents, remove nonexistent
          */
         ADD_REMOVE_ORPHANS
-    };
+    }
 
     public Exporter(String mongoUri, String dir) throws UnknownHostException {
         MongoClient client = new MongoClient(new MongoClientURI(mongoUri));
@@ -65,7 +55,7 @@ public class Exporter {
     }
 
     public static void main(String[] args) throws IOException {
-        Exporter exporter = new Exporter("mongodb://wmb:wmb123@paulo.mongohq.com:10027/books", "D:\\pdf");
+        Exporter exporter = new Exporter("mongodb://wmb:wmb123@ds062178.mongolab.com:62178/books", "D:\\pdf");
         exporter.execute();
     }
 
@@ -117,11 +107,10 @@ public class Exporter {
     /**
      *
      * @param list
-     * @param ext
      * @param collection
      * @param mode
      */
-    private void export(Collection<File> list, DBCollection collection, Mode mode) throws FileNotFoundException, IOException {
+    private void export(Collection<File> list, DBCollection collection, Mode mode) throws IOException {
         int deleted = 0, inserted = 0, updated = 0, failed = 0, counter = 0;
         if (mode == Mode.DELETE_ADD) {
             collection.remove(new BasicDBObject());
