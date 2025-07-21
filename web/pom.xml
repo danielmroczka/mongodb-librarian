@@ -7,7 +7,7 @@
     <packaging>war</packaging>
     
     <properties>
-        <spring.version>6.2.8</spring.version>
+        <spring.version>6.2.9</spring.version>
     </properties>
     
     <parent>
