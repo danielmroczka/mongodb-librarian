@@ -17,8 +17,8 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <spring.version>6.2.8</spring.version>
-        <spring.data.mongo.version>4.5.1</spring.data.mongo.version>
+        <spring.version>6.2.11</spring.version>
+        <spring.data.mongo.version>4.5.4</spring.data.mongo.version>
         <slf4j.version>2.0.17</slf4j.version>
     </properties>
 
@@ -51,7 +51,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.14.0</version>
+                <version>3.14.1</version>
                 <configuration>
                     <source>1.7</source>
                     <target>1.7</target>
